@@ -1,58 +1,97 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request
+import requests
 import os
 
 app = Flask(__name__)
 
-# ========================
-# STRYX CORE SYSTEM
-# ========================
+HF_TOKEN = os.getenv("HF_TOKEN")
+HF_API = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
 
-class StryxCore:
-    def __init__(self):
-        self.memory_log = []
+headers = {
+    "Authorization": f"Bearer {HF_TOKEN}"
+}
 
-    def execute(self, task):
-        if not task:
-            return "No task provided."
+class CryptoEngine:
+    def get_market_data(self, coin="bitcoin"):
+        url = f"https://api.coingecko.com/api/v3/coins/{coin}/market_chart"
+        params = {"vs_currency": "usd", "days": "14"}
+        response = requests.get(url, params=params)
+        data = response.json()
+        prices = [p[1] for p in data["prices"]]
+        return prices
 
-        response = f"AI processed task: {task}"
-        self.memory_log.append(task)
-        return response
+    def calculate_rsi(self, prices, period=14):
+        gains = []
+        losses = []
 
-    def memory(self):
-        return self.memory_log
+        for i in range(1, len(prices)):
+            diff = prices[i] - prices[i - 1]
+            if diff > 0:
+                gains.append(diff)
+            else:
+                losses.append(abs(diff))
 
+        avg_gain = sum(gains[-period:]) / period if gains else 0.001
+        avg_loss = sum(losses[-period:]) / period if losses else 0.001
 
-system = StryxCore()
+        rs = avg_gain / avg_loss
+        rsi = 100 - (100 / (1 + rs))
+        return round(rsi, 2)
 
-# ========================
-# ROUTES
-# ========================
+    def analyze(self, coin="bitcoin"):
+        prices = self.get_market_data(coin)
+        rsi = self.calculate_rsi(prices)
+        current_price = prices[-1]
+
+        trend = "Bullish" if prices[-1] > prices[0] else "Bearish"
+
+        return {
+            "price": current_price,
+            "rsi": rsi,
+            "trend": trend
+        }
+
+crypto = CryptoEngine()
+
+class StryxAI:
+    def ask_ai(self, prompt):
+        payload = {
+            "inputs": prompt,
+            "parameters": {"max_new_tokens": 200}
+        }
+        response = requests.post(HF_API, headers=headers, json=payload)
+        result = response.json()
+
+        if isinstance(result, list):
+            return result[0]["generated_text"]
+        return "AI unavailable."
+
+ai = StryxAI()
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     response = None
 
     if request.method == "POST":
-        task = request.form.get("task")
+        task = request.form.get("task").lower()
 
-        if task == "download":
-            # Generate temporary report
-            file_path = "/tmp/report.txt"
-            with open(file_path, "w") as f:
-                f.write("STRYX AI REPORT\n")
-                f.write("=================\n\n")
-                for item in system.memory():
-                    f.write(f"- {item}\n")
+        if "btc" in task:
+            coin = "bitcoin"
+        elif "eth" in task:
+            coin = "ethereum"
+        else:
+            coin = "bitcoin"
 
-            return send_file(file_path, as_attachment=True)
+        analysis = crypto.analyze(coin)
 
-        response = system.execute(task)
+        prompt = f"""
+        You are STRYX, professional crypto AI.
+        Current Price: {analysis['price']}
+        RSI: {analysis['rsi']}
+        Trend: {analysis['trend']}
+        Give short professional trading insight.
+        """
 
-    return render_template(
-        "index.html",
-        response=response,
-        memory=system.memory()
-    )
+        response = ai.ask_ai(prompt)
 
-# IMPORTANT: DO NOT USE app.run() FOR VERCEL
+    return render_template("index.html", response=response)
