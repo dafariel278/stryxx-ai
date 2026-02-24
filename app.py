@@ -3,9 +3,9 @@ import os
 
 app = Flask(__name__)
 
-# =========================
+# ========================
 # STRYX CORE SYSTEM
-# =========================
+# ========================
 
 class StryxCore:
     def __init__(self):
@@ -15,12 +15,6 @@ class StryxCore:
         if not task:
             return "No task provided."
 
-        task = task.lower()
-
-        if task == "download":
-            return "Download triggered."
-
-        # Simulasi AI processing
         response = f"AI processed task: {task}"
         self.memory_log.append(task)
         return response
@@ -31,9 +25,9 @@ class StryxCore:
 
 system = StryxCore()
 
-# =========================
+# ========================
 # ROUTES
-# =========================
+# ========================
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -43,14 +37,15 @@ def home():
         task = request.form.get("task")
 
         if task == "download":
-            # Generate report file
-            with open("report.txt", "w") as f:
+            # Generate temporary report
+            file_path = "/tmp/report.txt"
+            with open(file_path, "w") as f:
                 f.write("STRYX AI REPORT\n")
                 f.write("=================\n\n")
                 for item in system.memory():
                     f.write(f"- {item}\n")
 
-            return send_file("report.txt", as_attachment=True)
+            return send_file(file_path, as_attachment=True)
 
         response = system.execute(task)
 
@@ -60,9 +55,4 @@ def home():
         memory=system.memory()
     )
 
-# =========================
-# DEPLOY SAFE MODE
-# =========================
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+# IMPORTANT: DO NOT USE app.run() FOR VERCEL
