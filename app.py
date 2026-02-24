@@ -1,17 +1,13 @@
 from flask import Flask, render_template, request
 import requests
 import statistics
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import datetime
 import random
-import os
 
 app = Flask(__name__)
 
 # ===============================
-# SAFE COINGECKO FUNCTIONS
+# SAFE API REQUEST
 # ===============================
 
 def safe_request(url, params=None):
@@ -23,6 +19,10 @@ def safe_request(url, params=None):
     except:
         return None
 
+
+# ===============================
+# COINGECKO DATA
+# ===============================
 
 def get_price(asset_id):
     url = "https://api.coingecko.com/api/v3/simple/price"
@@ -37,10 +37,10 @@ def get_price(asset_id):
     if not data or asset_id not in data:
         return None, None
 
-    price = data[asset_id].get("usd")
-    change = data[asset_id].get("usd_24h_change")
-
-    return price, change
+    return (
+        data[asset_id].get("usd"),
+        data[asset_id].get("usd_24h_change")
+    )
 
 
 def get_market_data(asset_id, days=14):
@@ -101,29 +101,7 @@ def generate_signal(ma9, ma21, rsi):
 
 
 # ===============================
-# CHART GENERATOR
-# ===============================
-
-def generate_chart(prices, asset):
-    if not prices:
-        return
-
-    plt.figure()
-    plt.plot(prices)
-    plt.title(f"{asset.upper()} Price Chart")
-    plt.xlabel("Time")
-    plt.ylabel("USD")
-    plt.tight_layout()
-
-    if not os.path.exists("static"):
-        os.makedirs("static")
-
-    plt.savefig("static/chart.png")
-    plt.close()
-
-
-# ===============================
-# ENGINE
+# MAIN ENGINE
 # ===============================
 
 def stryx_engine(command):
@@ -151,11 +129,6 @@ def stryx_engine(command):
                 return """
 STRYX MARKET DATA TEMPORARILY UNAVAILABLE
 
-Possible Causes:
-- CoinGecko rate limit
-- API delay
-- Server cold start
-
 Please try again in a few seconds.
 """
 
@@ -164,8 +137,6 @@ Please try again in a few seconds.
             ma21 = moving_average(prices, 21)
             signal = generate_signal(ma9, ma21, rsi)
             fear_greed = random.randint(20, 80)
-
-            generate_chart(prices, asset)
 
             return f"""
 STRYX MARKET REPORT
@@ -216,10 +187,6 @@ Available Assets:
 - ETH
 - SOL
 - XRP
-
-Try:
-Analyze BTC
-Analyze ETH
 """
 
     return """
@@ -234,14 +201,9 @@ Try:
 """
 
 
-# ===============================
-# ROUTE
-# ===============================
-
 @app.route("/", methods=["GET", "POST"])
 def home():
     output = ""
-
     if request.method == "POST":
         task = request.form.get("task")
         if task:
@@ -251,4 +213,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run()
