@@ -1,81 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>STRYX CRYPTO AI INTELLIGENCE SYSTEM</title>
+<title>STRYX TERMINAL X</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body{
     margin:0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg,#000000,#0f0f0f,#1a1a1a);
-    color:#d4af37;
+    font-family: Consolas, monospace;
+    background:#000;
+    color:#00ffcc;
     overflow:hidden;
 }
 
-/* moving light effect */
+/* moving grid */
 body::before{
     content:"";
     position:fixed;
     width:200%;
     height:200%;
-    background: radial-gradient(circle,rgba(212,175,55,0.05) 0%,transparent 60%);
-    animation:moveLight 8s infinite alternate;
+    background-image:
+        linear-gradient(rgba(0,255,200,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,200,0.05) 1px, transparent 1px);
+    background-size:50px 50px;
+    animation:moveGrid 25s linear infinite;
 }
 
-@keyframes moveLight{
-    from{transform:translate(-10%,-10%) scale(1);}
-    to{transform:translate(10%,10%) scale(1.1);}
+@keyframes moveGrid{
+    from{transform:translate(0,0);}
+    to{transform:translate(-50px,-50px);}
 }
 
 .container{
     position:relative;
     z-index:2;
-    text-align:center;
-    padding:100px 20px;
+    padding:80px;
 }
 
 h1{
-    font-size:80px;
-    letter-spacing:12px;
-    text-shadow:0 0 25px rgba(212,175,55,0.8);
-}
-
-.subtitle{
-    font-size:22px;
-    margin-bottom:50px;
+    font-size:50px;
+    letter-spacing:6px;
+    text-shadow:0 0 15px #00ffcc;
 }
 
 input{
     width:500px;
     padding:15px;
-    font-size:18px;
     background:#111;
-    border:1px solid #d4af37;
-    color:#d4af37;
+    border:1px solid #00ffcc;
+    color:#00ffcc;
+    font-size:16px;
 }
 
 button{
     padding:15px 30px;
-    background:#d4af37;
+    background:#00ffcc;
     border:none;
     font-weight:bold;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#f1d27a;
 }
 
 .output{
-    margin-top:60px;
-    font-size:20px;
-    line-height:1.8;
+    margin-top:40px;
     white-space:pre-wrap;
-    min-height:200px;
+    font-size:16px;
+    line-height:1.6;
+    min-height:250px;
 }
 
-/* typing cursor */
 .cursor::after{
     content:"|";
     animation:blink 1s infinite;
@@ -90,12 +81,11 @@ button:hover{
 <body>
 
 <div class="container">
-<h1>STRYX</h1>
-<div class="subtitle">CRYPTO AI INTELLIGENCE SYSTEM</div>
+<h1>STRYX TERMINAL X</h1>
 
 <form method="POST">
-<input type="text" name="command" placeholder="Type: btc / eth / sol / xrp / bnb" required>
-<button type="submit">ANALYZE</button>
+<input type="text" name="command" placeholder="> analyze btc" required>
+<button type="submit">EXECUTE</button>
 </form>
 
 <div class="output cursor" id="outputText">
@@ -114,7 +104,7 @@ if(el.innerText.trim().length > 0){
         if(i < text.length){
             el.innerText += text.charAt(i);
             i++;
-            setTimeout(typeWriter,15);
+            setTimeout(typeWriter,12);
         }
     }
     typeWriter();
