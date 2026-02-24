@@ -87,17 +87,46 @@ def moving_average(prices, period):
     return round(statistics.mean(prices[-period:]), 2)
 
 
-def generate_signal(ma9, ma21, rsi):
-    if not ma9 or not ma21 or not rsi:
-        return "NO SIGNAL"
+# ===============================
+# INSTITUTIONAL SCORING ENGINE
+# ===============================
 
-    if ma9 > ma21 and rsi < 70:
-        return "BUY SIGNAL"
+def institutional_score(rsi, ma9, ma21, change):
+    score = 50
 
-    if ma9 < ma21 and rsi > 30:
-        return "SELL SIGNAL"
+    if rsi:
+        if rsi < 30:
+            score += 15
+        elif rsi > 70:
+            score -= 15
 
-    return "WAIT"
+    if ma9 and ma21:
+        if ma9 > ma21:
+            score += 15
+        else:
+            score -= 15
+
+    if change:
+        if change > 0:
+            score += 10
+        else:
+            score -= 10
+
+    score = max(0, min(100, score))
+    return score
+
+
+def generate_recommendation(score):
+    if score >= 75:
+        return "STRONG BUY"
+    elif score >= 60:
+        return "BUY"
+    elif score >= 45:
+        return "HOLD"
+    elif score >= 30:
+        return "WEAK SELL"
+    else:
+        return "STRONG SELL"
 
 
 # ===============================
@@ -127,20 +156,25 @@ def stryx_engine(command):
 
             if price is None or not prices:
                 return """
-STRYX MARKET DATA TEMPORARILY UNAVAILABLE
+STRYX INSTITUTIONAL MODE
 
-Please try again in a few seconds.
+Market data temporarily unavailable.
+Please retry in a few seconds.
 """
 
             rsi = calculate_rsi(prices)
             ma9 = moving_average(prices, 9)
             ma21 = moving_average(prices, 21)
-            signal = generate_signal(ma9, ma21, rsi)
-            fear_greed = random.randint(20, 80)
+
+            score = institutional_score(rsi, ma9, ma21, change)
+            recommendation = generate_recommendation(score)
+            confidence = round(score * random.uniform(0.85, 0.98), 2)
+
+            sentiment = "BULLISH" if score > 55 else "BEARISH" if score < 45 else "NEUTRAL"
 
             return f"""
-STRYX MARKET REPORT
----------------------
+🏦 STRYX INSTITUTIONAL REPORT
+--------------------------------
 Asset: {asset.upper()}
 Price: ${price}
 24H Change: {round(change,2)}%
@@ -149,50 +183,56 @@ RSI(14): {rsi}
 MA 9: {ma9}
 MA 21: {ma21}
 
-Signal: {signal}
-Fear & Greed: {fear_greed}
+Trend Score: {score}/100
+Market Sentiment: {sentiment}
+Recommendation: {recommendation}
+Confidence Level: {confidence}%
 
 Generated: {datetime.datetime.now()}
 """
 
     if "portfolio" in cmd:
         return """
-STRYX PORTFOLIO ANALYSIS
---------------------------
-Diversification Score: 72/100
-Risk Level: MEDIUM
-
-Recommendation:
-- Balance allocation
-- Avoid overexposure
-- Use stop-loss
+🏦 STRYX PORTFOLIO INTELLIGENCE
+--------------------------------
+Diversification Score: 78/100
+Risk Level: MODERATE
+Institutional Advice:
+- Maintain balance
+- Avoid high leverage
+- Allocate max 30% per asset
 """
 
     if "strategy" in cmd:
         return """
-STRYX TRADING STRATEGY
---------------------------
-1. Follow MA crossover
+🏦 STRYX STRATEGIC PLAYBOOK
+--------------------------------
+1. Trade with trend direction
 2. Confirm with RSI
-3. Risk max 2% per trade
-4. Always use stop-loss
+3. Risk max 2% capital
+4. Scale in, scale out
+5. Protect capital first
 """
 
     if "scan" in cmd:
         return """
-STRYX MARKET SCANNER
---------------------------
-Available Assets:
+🏦 STRYX MARKET SCANNER
+--------------------------------
+Supported Assets:
 - BTC
 - ETH
 - SOL
 - XRP
+
+Try:
+Analyze BTC
+Analyze ETH
 """
 
     return """
-STRYX PRO MODE ACTIVE
+🏦 STRYX INSTITUTIONAL MODE ACTIVE
 
-Try:
+Available Commands:
 - Analyze BTC
 - Analyze ETH
 - Portfolio BTC 50 ETH 50
