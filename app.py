@@ -5,113 +5,87 @@ import random
 
 app = Flask(__name__)
 
-# =========================
-# DATA FETCH
-# =========================
+COINS = {
+    "btc": "bitcoin",
+    "eth": "ethereum",
+    "sol": "solana",
+    "xrp": "ripple",
+    "bnb": "binancecoin"
+}
 
 def fetch_market():
     try:
-        ids = "bitcoin,ethereum"
+        ids = ",".join(COINS.values())
         url = f"https://api.coingecko.com/api/v3/simple/price?ids={ids}&vs_currencies=usd&include_24hr_change=true"
         return requests.get(url, timeout=10).json()
     except:
         return None
 
-# =========================
-# SOVEREIGN MACRO ENGINE
-# =========================
+def quant_score(change):
+    score = 50 + (change * 5)
+    score = max(5, min(95, score))
+    return round(score, 2)
 
-def detect_global_regime(btc_change, eth_change):
-
-    avg = (btc_change + eth_change) / 2
-
-    if avg > 5:
-        return "GLOBAL EXPANSION PHASE"
-    elif avg > 2:
-        return "RISK ACCUMULATION PHASE"
-    elif avg >= -2:
-        return "TRANSITIONAL MACRO ENVIRONMENT"
-    elif avg >= -5:
-        return "DEFENSIVE CAPITAL ROTATION"
+def signal(change):
+    if change > 4:
+        return "STRONG BUY"
+    elif change > 1:
+        return "BUY"
+    elif change >= -1:
+        return "HOLD"
+    elif change >= -4:
+        return "SELL"
     else:
-        return "SYSTEMIC STRESS ENVIRONMENT"
+        return "STRONG SELL"
 
-
-def sovereign_allocation(regime):
-
-    if "EXPANSION" in regime:
-        return "75% Growth Assets | 15% Strategic Core | 10% Defensive Reserve"
-    elif "ACCUMULATION" in regime:
-        return "65% Growth | 25% Core | 10% Defensive"
-    elif "TRANSITIONAL" in regime:
-        return "50% Core | 30% Growth | 20% Defensive"
-    elif "DEFENSIVE" in regime:
-        return "35% Growth | 30% Core | 35% Defensive"
+def ai_narrative(symbol, change):
+    if change > 2:
+        return f"Institutional capital accumulation detected in {symbol.upper()}. Momentum bias positive."
+    elif change < -2:
+        return f"Distribution pressure visible in {symbol.upper()}. Short-term risk elevated."
     else:
-        return "25% Growth | 25% Core | 50% Capital Preservation"
+        return f"{symbol.upper()} consolidating within neutral range. Await breakout confirmation."
 
-
-def sovereign_report():
+def analyze(symbol):
 
     data = fetch_market()
 
     if not data:
-        return "Global market data unavailable."
+        return "Market data unavailable."
 
-    btc_price = data["bitcoin"]["usd"]
-    btc_change = data["bitcoin"]["usd_24h_change"]
+    coin_id = COINS.get(symbol)
+    if not coin_id:
+        return "Unsupported asset."
 
-    eth_price = data["ethereum"]["usd"]
-    eth_change = data["ethereum"]["usd_24h_change"]
+    price = data[coin_id]["usd"]
+    change = data[coin_id]["usd_24h_change"]
 
-    regime = detect_global_regime(btc_change, eth_change)
-    allocation = sovereign_allocation(regime)
-
-    stability_index = round(100 - abs(btc_change * 2), 2)
+    score = quant_score(change)
+    rec = signal(change)
+    narrative = ai_narrative(symbol, change)
     confidence = round(random.uniform(82, 96), 2)
 
-    narrative = (
-        "Global capital flows indicate strategic positioning across risk assets."
-        if "EXPANSION" in regime else
-        "Institutional capital entering measured accumulation phase."
-        if "ACCUMULATION" in regime else
-        "Macro environment reflects rotational behavior."
-        if "TRANSITIONAL" in regime else
-        "Capital preservation mandates elevated."
-        if "DEFENSIVE" in regime else
-        "Systemic risk elevated. Sovereign capital defensive."
-    )
-
     return f"""
-STRYX SOVEREIGN WEALTH FUND REPORT
--------------------------------------------------------
-BTC: ${btc_price:,.2f} | {btc_change:.2f}%
-ETH: ${eth_price:,.2f} | {eth_change:.2f}%
+STRYX ULTRA CRYPTO INTELLIGENCE REPORT
+--------------------------------------------------
+Asset: {symbol.upper()}
+Price: ${price:,.2f}
+24H Change: {change:.2f}%
 
-GLOBAL MACRO REGIME:
-{regime}
+Quant Score: {score}/100
+AI Signal: {rec}
+Confidence Level: {confidence}%
 
-GLOBAL STABILITY INDEX:
-{stability_index}%
-
-INSTITUTIONAL CONFIDENCE:
-{confidence}%
-
-SOVEREIGN NARRATIVE:
+AI Market Narrative:
 {narrative}
 
-STRATEGIC ALLOCATION FRAMEWORK:
-{allocation}
-
-CAPITAL PRESERVATION PROTOCOL: ACTIVE
-LONG-TERM HORIZON: 5–20 YEARS
+Risk Protocol:
+• Dynamic Position Sizing
+• Volatility Monitoring Active
+• Institutional Flow Tracking
 
 Generated: {datetime.utcnow()} UTC
 """
-
-# =========================
-# ROUTE
-# =========================
 
 @app.route("/", methods=["GET","POST"])
 def home():
@@ -120,10 +94,13 @@ def home():
     if request.method == "POST":
         command = request.form.get("command","").lower()
 
-        if "sovereign" in command or "macro" in command or "fund" in command:
-            output = sovereign_report()
-        else:
-            output = "Type: sovereign report"
+        for symbol in COINS.keys():
+            if symbol in command:
+                output = analyze(symbol)
+                break
+
+        if not output:
+            output = "Type: btc / eth / sol / xrp / bnb"
 
     return render_template("index.html", output=output)
 
