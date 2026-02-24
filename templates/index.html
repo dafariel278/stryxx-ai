@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>STRYX AI</title>
+<title>STRYX QUANTUM AI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body{
     margin:0;
-    font-family: 'Segoe UI', sans-serif;
-    background:#01030a;
+    font-family:'Segoe UI',sans-serif;
+    background:#030712;
     color:#00f7ff;
     overflow-x:hidden;
 }
 
-/* PARTICLE BACKGROUND */
+/* Quantum background */
 canvas{
     position:fixed;
     top:0;
@@ -21,67 +21,67 @@ canvas{
     z-index:0;
 }
 
-/* MAIN CONTAINER */
-.container{
+/* Section layout */
+.section{
     position:relative;
     z-index:2;
+    padding:120px 40px;
     text-align:center;
-    padding:100px 20px;
 }
 
-/* STRYX TITLE */
 h1{
     font-size:90px;
-    letter-spacing:15px;
+    letter-spacing:14px;
     text-shadow:0 0 40px #00f7ff;
     animation:glowPulse 3s infinite alternate;
 }
 
 @keyframes glowPulse{
     from{ text-shadow:0 0 20px #00f7ff; }
-    to{ text-shadow:0 0 60px #00f7ff; }
+    to{ text-shadow:0 0 70px #00f7ff; }
 }
 
 .subtitle{
-    font-size:22px;
-    margin-bottom:60px;
-    opacity:0.8;
+    font-size:24px;
+    max-width:900px;
+    margin:30px auto;
+    line-height:1.7;
+    opacity:0.85;
 }
 
-/* HOLOGRAM PANEL */
+/* Glass panel */
 .panel{
-    max-width:900px;
-    margin:auto;
-    padding:40px;
-    background:rgba(0,20,40,0.3);
+    max-width:1000px;
+    margin:80px auto;
+    padding:50px;
+    background:rgba(0,25,40,0.4);
+    backdrop-filter:blur(15px);
     border:1px solid rgba(0,247,255,0.3);
-    backdrop-filter: blur(15px);
     border-radius:20px;
     box-shadow:0 0 60px rgba(0,247,255,0.2);
     position:relative;
-    overflow:hidden;
 }
 
-/* RADAR SCAN LINE */
+/* Sweep animation */
 .panel::before{
     content:"";
     position:absolute;
-    width:100%;
+    width:150%;
     height:2px;
     background:#00f7ff;
     top:0;
-    animation:scan 5s linear infinite;
+    left:-25%;
+    animation:sweep 4s linear infinite;
 }
 
-@keyframes scan{
+@keyframes sweep{
     from{ top:0; }
     to{ top:100%; }
 }
 
-/* INPUT */
 input{
     width:70%;
-    padding:15px;
+    padding:18px;
     background:transparent;
     border:1px solid #00f7ff;
     color:#00f7ff;
@@ -89,7 +89,7 @@ input{
 }
 
 button{
-    padding:15px 30px;
+    padding:18px 30px;
     background:#00f7ff;
     border:none;
     font-weight:bold;
@@ -100,19 +100,17 @@ button{
 
 button:hover{
     background:#00c3cc;
-    box-shadow:0 0 20px #00f7ff;
+    box-shadow:0 0 25px #00f7ff;
 }
 
-/* OUTPUT */
 .output{
     margin-top:40px;
     white-space:pre-wrap;
     font-size:18px;
-    line-height:1.7;
-    min-height:200px;
+    line-height:1.8;
+    min-height:250px;
 }
 
-/* CURSOR */
 .cursor::after{
     content:"|";
     animation:blink 1s infinite;
@@ -123,7 +121,8 @@ button:hover{
 }
 
 footer{
-    margin-top:80px;
+    padding:60px;
+    text-align:center;
     font-size:14px;
     opacity:0.5;
 }
@@ -132,49 +131,50 @@ footer{
 
 <body>
 
-<canvas id="particles"></canvas>
+<canvas id="quantum"></canvas>
 
-<div class="container">
+<div class="section">
 <h1>STRYX</h1>
-<div class="subtitle">OMNI AI CRYPTO INTELLIGENCE SYSTEM</div>
+<div class="subtitle">
+STRYX AI is a Quantum Institutional Crypto Intelligence Agent designed to analyze digital asset markets using quantitative scoring systems, technical indicators, and institutional-style risk frameworks.
+</div>
+</div>
 
-<div class="panel">
+<div class="section panel">
 <form method="POST">
 <input type="text" name="command" placeholder="> analyze btc / eth / sol" required>
 <button type="submit">EXECUTE</button>
 </form>
 
 <div class="output cursor" id="outputText">
-{% if output %}{{ output }}{% else %}OMNI AI SYSTEM READY...{% endif %}
+{% if output %}{{ output }}{% else %}QUANTUM CORE READY...{% endif %}
 </div>
 </div>
 
 <footer>
-STRYX OMNI AI © 2026 — Crypto Engine
+STRYX QUANTUM AI © 2026 — Institutional Crypto Intelligence Platform
 </footer>
 
-</div>
-
 <script>
-// PARTICLE FIELD
-const canvas = document.getElementById("particles");
+// Quantum particle field
+const canvas = document.getElementById("quantum");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let particlesArray = [];
+let particles = [];
 
 class Particle{
     constructor(){
-        this.x = Math.random()*canvas.width;
-        this.y = Math.random()*canvas.height;
-        this.size = Math.random()*2;
-        this.speedX = Math.random()*0.5-0.25;
-        this.speedY = Math.random()*0.5-0.25;
+        this.x=Math.random()*canvas.width;
+        this.y=Math.random()*canvas.height;
+        this.size=Math.random()*2;
+        this.speedX=Math.random()*0.6-0.3;
+        this.speedY=Math.random()*0.6-0.3;
     }
     update(){
-        this.x += this.speedX;
-        this.y += this.speedY;
+        this.x+=this.speedX;
+        this.y+=this.speedY;
         if(this.x<0||this.x>canvas.width) this.speedX*=-1;
         if(this.y<0||this.y>canvas.height) this.speedY*=-1;
     }
@@ -187,15 +187,15 @@ class Particle{
 }
 
 function init(){
-    particlesArray=[];
-    for(let i=0;i<120;i++){
-        particlesArray.push(new Particle());
+    particles=[];
+    for(let i=0;i<150;i++){
+        particles.push(new Particle());
     }
 }
 
 function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    particlesArray.forEach(p=>{
+    particles.forEach(p=>{
         p.update();
         p.draw();
     });
@@ -205,17 +205,17 @@ function animate(){
 init();
 animate();
 
-// TYPEWRITER
+// Typing effect
 const el = document.getElementById("outputText");
 if(el.innerText.trim().length > 0){
-    let text = el.innerText;
+    let text=el.innerText;
     el.innerText="";
     let i=0;
     function typeWriter(){
-        if(i < text.length){
-            el.innerText += text.charAt(i);
+        if(i<text.length){
+            el.innerText+=text.charAt(i);
             i++;
-            setTimeout(typeWriter,12);
+            setTimeout(typeWriter,10);
         }
     }
     typeWriter();
