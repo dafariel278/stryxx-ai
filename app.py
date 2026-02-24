@@ -1,51 +1,63 @@
 from flask import Flask, render_template, request
 import random
+import datetime
 
 app = Flask(__name__)
 
-def stryx_brain(command):
+def stryx_engine(command):
     cmd = command.lower()
 
-    # Crypto Mode
+    # Crypto Analysis Mode
     if "btc" in cmd or "bitcoin" in cmd:
         price = random.randint(40000, 70000)
-        trend = random.choice(["Bullish", "Bearish", "Sideways"])
+        trend = random.choice(["Bullish Momentum", "Bearish Pressure", "Sideways Consolidation"])
+        confidence = random.randint(60, 95)
+
         return f"""
-STRYX CRYPTO ANALYSIS
+STRYX CRYPTO ANALYSIS REPORT
 
 Asset: Bitcoin (BTC)
-Estimated Price: ${price}
-Market Trend: {trend}
+Estimated Price Zone: ${price}
+Market Structure: {trend}
+Confidence Level: {confidence}%
 
-Recommendation:
-- Monitor RSI
-- Watch volume confirmation
-- Use risk management
+Technical Insight:
+- Monitor RSI divergence
+- Confirm with volume breakout
+- Risk management required
+
+Generated: {datetime.datetime.now()}
 """
 
-    # AI Strategy Mode
+    # Strategy Mode
     if "strategy" in cmd:
         return """
 STRYX STRATEGY ENGINE
 
-Suggested Trading Plan:
-1. Identify market structure
-2. Wait for breakout confirmation
-3. Risk only 1-2% per trade
-4. Always use stop-loss
+Recommended Plan:
+
+1. Identify trend direction
+2. Enter on pullback
+3. Risk 1% per trade
+4. Use trailing stop
+5. Avoid overtrading
+
+Discipline > Emotion
 """
 
-    # General AI Mode
+    # General Intelligence Mode
     return f"""
 STRYX INTELLIGENCE RESPONSE
 
 Command Received:
 {command}
 
-Analysis:
-- Task logged
-- System running stable
-- Awaiting advanced AI integration
+System Analysis:
+- Core system online
+- Modules active
+- Awaiting advanced AI expansion
+
+Status: Stable
 """
 
 @app.route("/", methods=["GET", "POST"])
@@ -54,7 +66,7 @@ def home():
     if request.method == "POST":
         task = request.form.get("task")
         if task:
-            output = stryx_brain(task)
+            output = stryx_engine(task)
     return render_template("index.html", output=output)
 
 if __name__ == "__main__":
