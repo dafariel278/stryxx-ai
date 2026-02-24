@@ -16,14 +16,20 @@
         <span style="color:#d4af37; font-weight:bold;">ONLINE</span>
     </p>
 
-    <form id="taskForm" method="POST" style="margin-top:40px;">
-        <input name="task" placeholder="Initialize command..." required>
-        <button type="submit">EXECUTE</button>
-    </form>
-
-    <form method="POST">
-    <input type="text" name="task" placeholder="Analyze BTC or Ask Strategy..." required>
-    <button type="submit">EXECUTE</button>
+    <form method="POST" style="display:flex; justify-content:center; gap:10px; margin-top:30px;">
+    <input 
+        type="text" 
+        name="task" 
+        placeholder="Analyze BTC, Ethereum, or Ask Strategy..." 
+        required
+        style="width:500px; padding:15px; background:#111; border:1px solid #BFA35A; color:#fff;"
+    >
+    <button 
+        type="submit"
+        style="padding:15px 25px; background:#BFA35A; border:none; font-weight:bold;"
+    >
+        EXECUTE
+    </button>
 </form>
 
 {% if output %}
