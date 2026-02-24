@@ -53,18 +53,40 @@ class CryptoEngine:
 
 crypto = CryptoEngine()
 
-class StryxAI:
+class StryxAI:  
     def ask_ai(self, prompt):
+
+        if not HF_TOKEN:
+            return "ERROR: HF_TOKEN not found in Vercel environment."
+
         payload = {
             "inputs": prompt,
-            "parameters": {"max_new_tokens": 200}
+            "parameters": {
+                "max_new_tokens": 200,
+                "temperature": 0.7
+            }
         }
-        response = requests.post(HF_API, headers=headers, json=payload)
-        result = response.json()
 
-        if isinstance(result, list):
-            return result[0]["generated_text"]
-        return "AI unavailable."
+        try:
+            response = requests.post(
+                HF_API,
+                headers=headers,
+                json=payload,
+                timeout=30
+            )
+
+            if response.status_code != 200:
+                return "HF API ERROR: " + str(response.status_code)
+
+            result = response.json()
+
+            if isinstance(result, list) and "generated_text" in result[0]:
+                return result[0]["generated_text"]
+
+            return str(result)
+
+        except Exception as e:
+            return "REQUEST ERROR: " + str(e)
 
 ai = StryxAI()
 
