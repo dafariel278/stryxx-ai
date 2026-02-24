@@ -4,60 +4,92 @@ import datetime
 
 app = Flask(__name__)
 
-def stryx_engine(command):
+def market_ai_engine(command):
     cmd = command.lower()
 
-    # Crypto Analysis Mode
-    if "btc" in cmd or "bitcoin" in cmd:
-        price = random.randint(40000, 70000)
-        trend = random.choice(["Bullish Momentum", "Bearish Pressure", "Sideways Consolidation"])
-        confidence = random.randint(60, 95)
+    assets = {
+        "btc": "Bitcoin",
+        "bitcoin": "Bitcoin",
+        "eth": "Ethereum",
+        "ethereum": "Ethereum",
+        "sol": "Solana",
+        "xrp": "XRP"
+    }
 
+    detected_asset = None
+    for key in assets:
+        if key in cmd:
+            detected_asset = assets[key]
+            break
+
+    trend = random.choice(["Bullish", "Bearish", "Sideways Consolidation"])
+    volatility = random.choice(["Low", "Moderate", "High"])
+    sentiment = random.choice(["Fear", "Neutral", "Greed"])
+    confidence = random.randint(65, 94)
+
+    if detected_asset:
         return f"""
-STRYX CRYPTO ANALYSIS REPORT
-
-Asset: Bitcoin (BTC)
-Estimated Price Zone: ${price}
-Market Structure: {trend}
+STRYX MARKET ANALYSIS REPORT
+--------------------------------
+Asset: {detected_asset}
+Trend: {trend}
+Volatility: {volatility}
+Market Sentiment: {sentiment}
 Confidence Level: {confidence}%
 
 Technical Insight:
-- Monitor RSI divergence
-- Confirm with volume breakout
-- Risk management required
+• Monitor RSI divergence
+• Confirm breakout with volume
+• Avoid overleveraging
+
+Risk Management:
+• Risk max 1-2% per trade
+• Always use stop-loss
 
 Generated: {datetime.datetime.now()}
 """
 
-    # Strategy Mode
     if "strategy" in cmd:
         return """
 STRYX STRATEGY ENGINE
+--------------------------------
+Recommended Trading Plan:
 
-Recommended Plan:
-
-1. Identify trend direction
-2. Enter on pullback
-3. Risk 1% per trade
+1. Identify market structure
+2. Enter after confirmation candle
+3. Risk only small percentage
 4. Use trailing stop
-5. Avoid overtrading
+5. Avoid emotional trading
 
 Discipline > Emotion
 """
 
-    # General Intelligence Mode
+    if "market" in cmd:
+        return f"""
+GLOBAL MARKET STATUS
+--------------------------------
+Overall Trend: {trend}
+Volatility Index: {volatility}
+Sentiment Indicator: {sentiment}
+
+Outlook:
+Market currently showing {trend.lower()} behavior.
+Traders should remain cautious and manage risk.
+"""
+
     return f"""
 STRYX INTELLIGENCE RESPONSE
-
+--------------------------------
 Command Received:
 {command}
 
-System Analysis:
-- Core system online
-- Modules active
-- Awaiting advanced AI expansion
+System Status: ONLINE
+Modules Active:
+• Market Scanner
+• Strategy Engine
+• Risk Analyzer
 
-Status: Stable
+Awaiting next command...
 """
 
 @app.route("/", methods=["GET", "POST"])
@@ -66,7 +98,8 @@ def home():
     if request.method == "POST":
         task = request.form.get("task")
         if task:
-            output = stryx_engine(task)
+            output = market_ai_engine(task)
+
     return render_template("index.html", output=output)
 
 if __name__ == "__main__":

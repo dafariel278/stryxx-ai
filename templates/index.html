@@ -21,17 +21,16 @@
         <button type="submit">EXECUTE</button>
     </form>
 
-    <form method="POST" style="margin-top:20px;">
-        <input type="hidden" name="task" value="download">
-        <button type="submit">DOWNLOAD REPORT</button>
-    </form>
+    <form method="POST">
+    <input type="text" name="task" placeholder="Analyze BTC or Ask Strategy..." required>
+    <button type="submit">EXECUTE</button>
+</form>
 
-    {% if response %}
-    <div class="response">
-        <h3>Output</h3>
-        <p>{{ response }}</p>
-    </div>
-    {% endif %}
+{% if output %}
+<div class="output-box">
+    <pre>{{ output }}</pre>
+</div>
+{% endif %}
 
     {% if memory %}
     <div class="memory">
