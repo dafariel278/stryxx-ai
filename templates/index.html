@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STRYX AI Control System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>STRYX</h1>
+    <p class="subtitle">AI Autonomous Control Interface</p>
+
+    <p style="color:#aaa; font-size:14px;">
+        System Status:
+        <span style="color:#d4af37; font-weight:bold;">ONLINE</span>
+    </p>
+
+    <form id="taskForm" method="POST" style="margin-top:40px;">
+        <input name="task" placeholder="Initialize command..." required>
+        <button type="submit">EXECUTE</button>
+    </form>
+
+    <form method="POST" style="margin-top:20px;">
+        <input type="hidden" name="task" value="download">
+        <button type="submit">DOWNLOAD REPORT</button>
+    </form>
+
+    {% if response %}
+    <div class="response">
+        <h3>Output</h3>
+        <p>{{ response }}</p>
+    </div>
+    {% endif %}
+
+    {% if memory %}
+    <div class="memory">
+        <h3>Memory Log</h3>
+        <ul>
+            {% for item in memory %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        STRYX AI SYSTEM © 2026
+    </div>
+
+</div>
+
+<div id="loadingOverlay" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#000;
+    color:#d4af37;
+    text-align:center;
+    padding-top:300px;
+    font-size:28px;
+    z-index:9999;
+">
+    INITIALIZING AI CORE...
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    var form = document.getElementById("taskForm");
+    var overlay = document.getElementById("loadingOverlay");
+
+    if (form) {
+        form.addEventListener("submit", function() {
+            overlay.style.display = "block";
+        });
+    }
+
+    /* PARTICLE GENERATOR */
+    for (let i = 0; i < 25; i++) {
+        let particle = document.createElement("div");
+        particle.className = "particle";
+        particle.style.left = Math.random() * 100 + "vw";
+        particle.style.animationDuration = (5 + Math.random() * 10) + "s";
+        document.body.appendChild(particle);
+    }
+
+});
+</script>
+
+</body>
+</html>
