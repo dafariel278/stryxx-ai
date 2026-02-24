@@ -1,159 +1,188 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>STRYX GLOBAL QUANT</title>
+    <title>STRYX Wall Street Terminal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 70%);
-            color: #d4af37;
-            overflow-x: hidden;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: Consolas, monospace;
+    background: #0b0f14;
+    color: #00ffcc;
+    overflow-x: hidden;
+}
 
-        /* Animated grid background */
-        body::before {
-            content: "";
-            position: fixed;
-            width: 200%;
-            height: 200%;
-            background-image: 
-                linear-gradient(rgba(212,175,55,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(212,175,55,0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: moveGrid 20s linear infinite;
-            z-index: 0;
-        }
+/* Moving grid background */
+body::before {
+    content: "";
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    background-image:
+        linear-gradient(rgba(0,255,200,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,200,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: moveGrid 25s linear infinite;
+    z-index: 0;
+}
 
-        @keyframes moveGrid {
-            from { transform: translate(0, 0); }
-            to { transform: translate(-50px, -50px); }
-        }
+@keyframes moveGrid {
+    from { transform: translate(0,0); }
+    to { transform: translate(-40px,-40px); }
+}
 
-        .container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 80px 20px;
-            animation: fadeIn 1.5s ease-in-out;
-        }
+.container {
+    position: relative;
+    z-index: 2;
+    padding: 60px 40px;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+/* Header */
+.header {
+    font-size: 42px;
+    font-weight: bold;
+    letter-spacing: 6px;
+    color: #00ffcc;
+    text-shadow: 0 0 20px rgba(0,255,200,0.7);
+}
 
-        h1 {
-            font-size: 72px;
-            letter-spacing: 10px;
-            text-shadow: 0 0 20px rgba(212,175,55,0.7);
-            margin-bottom: 10px;
-        }
+.sub {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 30px;
+}
 
-        .subtitle {
-            font-size: 20px;
-            color: #bfa35a;
-            margin-bottom: 40px;
-        }
+/* Market ticker */
+.ticker {
+    background: #111;
+    padding: 10px;
+    margin-bottom: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 1px solid #00ffcc33;
+    border-bottom: 1px solid #00ffcc33;
+}
 
-        .status {
-            font-size: 14px;
-            margin-bottom: 30px;
-            color: #aaa;
-        }
+.ticker span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scrollTicker 20s linear infinite;
+}
 
-        .input-group {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+@keyframes scrollTicker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+}
 
-        input {
-            width: 500px;
-            padding: 15px;
-            font-size: 18px;
-            background: #111;
-            border: 1px solid #bfa35a;
-            color: #d4af37;
-            outline: none;
-        }
+/* Input */
+.input-group {
+    display: flex;
+    margin-bottom: 30px;
+}
 
-        input:focus {
-            box-shadow: 0 0 15px rgba(212,175,55,0.5);
-        }
+input {
+    flex: 1;
+    padding: 15px;
+    background: #111;
+    border: 1px solid #00ffcc55;
+    color: #00ffcc;
+    font-size: 16px;
+}
 
-        button {
-            padding: 15px 30px;
-            background: #d4af37;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+input:focus {
+    outline: none;
+    box-shadow: 0 0 15px #00ffcc55;
+}
 
-        button:hover {
-            background: #f5d76e;
-            box-shadow: 0 0 15px rgba(212,175,55,0.8);
-        }
+button {
+    padding: 15px 25px;
+    background: #00ffcc;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-        .output-box {
-            margin: 50px auto;
-            width: 70%;
-            background: rgba(20,20,20,0.9);
-            padding: 30px;
-            border-radius: 10px;
-            border: 1px solid rgba(212,175,55,0.3);
-            font-size: 18px;
-            text-align: left;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            animation: glowBox 3s infinite alternate;
-        }
+button:hover {
+    background: #00ffaa;
+}
 
-        @keyframes glowBox {
-            from { box-shadow: 0 0 10px rgba(212,175,55,0.2); }
-            to { box-shadow: 0 0 25px rgba(212,175,55,0.6); }
-        }
+/* Terminal output */
+.output-box {
+    background: #000;
+    padding: 30px;
+    border: 1px solid #00ffcc33;
+    min-height: 200px;
+    font-size: 16px;
+    line-height: 1.6;
+    position: relative;
+}
 
-        footer {
-            margin-top: 80px;
-            font-size: 14px;
-            color: #666;
-        }
+/* Scanning animation */
+.output-box::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #00ffcc;
+    top: 0;
+    animation: scanLine 4s linear infinite;
+}
 
-        @media (max-width: 768px) {
-            h1 { font-size: 40px; }
-            input { width: 80%; }
-            .output-box { width: 90%; }
-        }
-    </style>
+@keyframes scanLine {
+    from { top: 0; }
+    to { top: 100%; }
+}
+
+.footer {
+    margin-top: 60px;
+    font-size: 12px;
+    color: #555;
+}
+
+@media(max-width:768px){
+    .header{font-size:28px;}
+    .input-group{flex-direction:column;}
+    button{margin-top:10px;}
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
-    <h1>STRYX</h1>
-    <div class="subtitle">GLOBAL QUANT SCANNER SYSTEM</div>
-    <div class="status">System Status: ONLINE</div>
 
-    <form method="POST">
-        <div class="input-group">
-            <input type="text" name="command" placeholder="Type: scan market / btc / eth / portfolio..." required>
-            <button type="submit">EXECUTE</button>
-        </div>
-    </form>
+<div class="header">STRYX TERMINAL</div>
+<div class="sub">GLOBAL QUANT HEDGE FUND SYSTEM • LIVE MARKET SCANNER</div>
 
-    {% if output %}
-    <div class="output-box">
-        {{ output }}
-    </div>
-    {% endif %}
+<div class="ticker">
+<span>
+BTC 68,420 ▲2.3%  |  ETH 3,420 ▲1.8%  |  GOLD 2,032 ▲0.6%  |  SPX 5,120 ▼0.3%  |  DXY 104.3 ▲0.2%
+</span>
+</div>
 
-    <footer>
-        STRYX GLOBAL QUANT AI © 2026
-    </footer>
+<form method="POST">
+<div class="input-group">
+<input type="text" name="command" placeholder="> scan btc / analyze portfolio 50 btc 50 eth / macro outlook" required>
+<button type="submit">EXECUTE</button>
+</div>
+</form>
+
+{% if output %}
+<div class="output-box">
+{{ output }}
+</div>
+{% else %}
+<div class="output-box">
+System Ready.
+Waiting for command...
+</div>
+{% endif %}
+
+<div class="footer">
+STRYX GLOBAL QUANT TERMINAL © 2026
+</div>
+
 </div>
 
 </body>
