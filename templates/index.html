@@ -1,95 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>STRYX AI Control System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>STRYX Quant Terminal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin:0;
+            font-family: 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 70%);
+            color:#E6C77A;
+            text-align:center;
+        }
+
+        .container {
+            max-width:900px;
+            margin:80px auto;
+            padding:40px;
+        }
+
+        h1 {
+            font-size:64px;
+            letter-spacing:8px;
+            margin-bottom:10px;
+        }
+
+        h2 {
+            font-size:22px;
+            font-weight:400;
+            color:#C9A94F;
+            margin-bottom:30px;
+        }
+
+        .status {
+            font-size:18px;
+            margin-bottom:40px;
+        }
+
+        input {
+            width:70%;
+            padding:18px;
+            font-size:18px;
+            border:1px solid #C9A94F;
+            background:#111;
+            color:#E6C77A;
+            outline:none;
+        }
+
+        button {
+            padding:18px 30px;
+            font-size:16px;
+            background:#C9A94F;
+            border:none;
+            color:black;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        button:hover {
+            background:#E6C77A;
+        }
+
+        .output {
+            margin-top:50px;
+            padding:30px;
+            background:#111;
+            border:1px solid #C9A94F;
+            text-align:left;
+            font-size:18px;
+            line-height:1.7;
+            white-space:pre-wrap;
+        }
+
+        .footer {
+            margin-top:80px;
+            font-size:14px;
+            color:#666;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-
     <h1>STRYX</h1>
-    <p class="subtitle">AI Autonomous Control Interface</p>
+    <h2>Quant Hedge Fund Intelligence Engine</h2>
+    <div class="status">System Status: <strong>ONLINE</strong></div>
 
-    <p style="color:#aaa; font-size:14px;">
-        System Status:
-        <span style="color:#d4af37; font-weight:bold;">ONLINE</span>
-    </p>
+    <form method="POST">
+        <input name="command" placeholder="Analyze BTC | Portfolio BTC 60 ETH 40 | Scan market..." required>
+        <button type="submit">EXECUTE</button>
+    </form>
 
-    <form method="POST" style="margin-top:30px;">
-    <input type="text" name="task" placeholder="Analyze BTC or Portfolio BTC 50 ETH 50..." required>
-    <button type="submit">EXECUTE</button>
-</form>
-
-{% if output %}
-<div style="margin-top:30px;">
-    <pre style="white-space:pre-wrap;">{{ output }}</pre>
-</div>
-
-{% if "FULL MARKET REPORT" in output %}
-<div style="margin-top:20px;">
-    <img src="{{ url_for('static', filename='chart.png') }}" width="600">
-</div>
-{% endif %}
-{% endif %}
-
-    {% if memory %}
-    <div class="memory">
-        <h3>Memory Log</h3>
-        <ul>
-            {% for item in memory %}
-            <li>{{ item }}</li>
-            {% endfor %}
-        </ul>
+    {% if output %}
+    <div class="output">
+{{ output }}
     </div>
     {% endif %}
 
     <div class="footer">
-        STRYX AI SYSTEM © 2026
+        STRYX Quant System © 2026
     </div>
-
 </div>
-
-<div id="loadingOverlay" style="
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:#000;
-    color:#d4af37;
-    text-align:center;
-    padding-top:300px;
-    font-size:28px;
-    z-index:9999;
-">
-    INITIALIZING AI CORE...
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-
-    var form = document.getElementById("taskForm");
-    var overlay = document.getElementById("loadingOverlay");
-
-    if (form) {
-        form.addEventListener("submit", function() {
-            overlay.style.display = "block";
-        });
-    }
-
-    /* PARTICLE GENERATOR */
-    for (let i = 0; i < 25; i++) {
-        let particle = document.createElement("div");
-        particle.className = "particle";
-        particle.style.left = Math.random() * 100 + "vw";
-        particle.style.animationDuration = (5 + Math.random() * 10) + "s";
-        document.body.appendChild(particle);
-    }
-
-});
-</script>
 
 </body>
 </html>
